@@ -203,20 +203,33 @@ router.get("/logs/:roomId/stream", (req, res) => {
 
     // Endpoint to validate room ID and add a participant
     router.post("/validateRoom", async (req, res) => {
-        const { rollNumber, roomId } = req.body;
-        console.log("Validating Room ID:", roomId);
-    
-        try {
-            // Step 1: Validate the room
-            const room = await Room.findOne({ roomId });
-            if (!room) {
-                console.error("Room not found:", roomId);
-                return res.status(404).json({
-                    success: false,
-                    message: "Room not found.",
-                });
-            }
-            console.log("Room found:", room);
+    const { rollNumber, roomId } = req.body; // Extract rollNumber and roomId from request body
+    console.log("Validating Room ID:", roomId); // Log the room ID for debugging
+
+    try {
+        // Step 1: Validate the room
+        const room = await Room.findOne({ roomId }); // Query the database to find the room by roomId
+        if (!room) {
+            console.error("Room not found:", roomId); // Log error if room not found
+            return res.status(404).json({
+                success: false,
+                message: "Room not found.", // Return error response if room not found
+            });
+        }
+        console.log("Room found:", room); // Log room if found
+        return res.status(200).json({
+            success: true,
+            message: "Room is valid.", // Return success response if room is found
+        });
+    } catch (error) {
+        console.error("Error validating room:", error); // Log any errors
+        return res.status(500).json({
+            success: false,
+            message: "Server error while validating room.", // Return server error if exception occurs
+        });
+    }
+});
+
     
             // Step 2: Validate the student
             const isValidStudent = await validateStudent(rollNumber);

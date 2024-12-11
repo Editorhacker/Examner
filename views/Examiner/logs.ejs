@@ -71,7 +71,7 @@
         const tableBody = document.getElementById('logs-table-body');
 
         // Establish an EventSource connection
-        const eventSource = new EventSource(`https://examapp-1-7pb2.onrender.com/createClass/logs/${roomId}/stream`);
+        const eventSource = new EventSource(`https://examner.onrender.com/createClass/logs/${roomId}/stream`);
 
         eventSource.onmessage = (event) => {
             const log = JSON.parse(event.data);

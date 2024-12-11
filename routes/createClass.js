@@ -228,7 +228,7 @@ router.get("/logs/:roomId/stream", (req, res) => {
             message: "Server error while validating room.", // Return server error if exception occurs
         });
     }
-});
+
 
     
             // Step 2: Validate the student

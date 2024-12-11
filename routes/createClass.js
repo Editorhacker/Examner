@@ -202,7 +202,7 @@ router.get("/logs/:roomId/stream", (req, res) => {
     });
 
     // Endpoint to validate room ID and add a participant
-    router.post("/validateRoom", async (req, res) => {
+router.post("/validateRoom", async (req, res) => { // Add async here
     const { rollNumber, roomId } = req.body; // Extract rollNumber and roomId from request body
     console.log("Validating Room ID:", roomId); // Log the room ID for debugging
 
@@ -217,29 +217,16 @@ router.get("/logs/:roomId/stream", (req, res) => {
             });
         }
         console.log("Room found:", room); // Log room if found
-        return res.status(200).json({
-            success: true,
-            message: "Room is valid.", // Return success response if room is found
-        });
-    } catch (error) {
-        console.error("Error validating room:", error); // Log any errors
-        return res.status(500).json({
-            success: false,
-            message: "Server error while validating room.", // Return server error if exception occurs
-        });
-    }
 
-
-    
-            // Step 2: Validate the student
-            const isValidStudent = await validateStudent(rollNumber);
-            if (!isValidStudent) {
-                console.error(`Validation failed for student roll number: ${rollNumber}`);
-                return res.status(400).json({
-                    success: false,
-                    message: "Invalid roll number. Student validation failed.",
-                });
-            }
+        // Step 2: Validate the student
+        const isValidStudent = await validateStudent(rollNumber); // Await here for student validation
+        if (!isValidStudent) {
+            console.error(`Validation failed for student roll number: ${rollNumber}`);
+            return res.status(400).json({
+                success: false,
+                message: "Invalid roll number. Student validation failed.",
+            });
+        }
     
             // Step 3: Add the validated participant to the room
             const participant = {

@@ -202,31 +202,31 @@ router.get("/logs/:roomId/stream", (req, res) => {
     });
 
     // Endpoint to validate room ID and add a participant
-router.post("/validateRoom", async (req, res) => { // Add async here
-    const { rollNumber, roomId } = req.body; // Extract rollNumber and roomId from request body
-    console.log("Validating Room ID:", roomId); // Log the room ID for debugging
-
-    try {
-        // Step 1: Validate the room
-        const room = await Room.findOne({ roomId }); // Query the database to find the room by roomId
-        if (!room) {
-            console.error("Room not found:", roomId); // Log error if room not found
-            return res.status(404).json({
-                success: false,
-                message: "Room not found.", // Return error response if room not found
-            });
-        }
-        console.log("Room found:", room); // Log room if found
-
-        // Step 2: Validate the student
-        const isValidStudent = await validateStudent(rollNumber); // Await here for student validation
-        if (!isValidStudent) {
-            console.error(`Validation failed for student roll number: ${rollNumber}`);
-            return res.status(400).json({
-                success: false,
-                message: "Invalid roll number. Student validation failed.",
-            });
-        }
+    router.post("/validateRoom", async (req, res) => {
+        const { rollNumber, roomId } = req.body;
+        console.log("Validating Room ID:", roomId);
+    
+        try {
+            // Step 1: Validate the room
+            const room = await Room.findOne({ roomId });
+            if (!room) {
+                console.error("Room not found:", roomId);
+                return res.status(404).json({
+                    success: false,
+                    message: "Room not found.",
+                });
+            }
+            console.log("Room found:", room);
+    
+            // Step 2: Validate the student
+            const isValidStudent = await validateStudent(rollNumber);
+            if (!isValidStudent) {
+                console.error(`Validation failed for student roll number: ${rollNumber}`);
+                return res.status(400).json({
+                    success: false,
+                    message: "Invalid roll number. Student validation failed.",
+                });
+            }
     
             // Step 3: Add the validated participant to the room
             const participant = {
@@ -254,7 +254,35 @@ router.post("/validateRoom", async (req, res) => { // Add async here
         }
     });
     
-
+router.post('/CheckRoom', async (req, res) => {
+        try {
+            const { roomId } = req.body;
+    
+            if (!roomId) {
+                return res.status(400).json({ success: false, message: 'roomId is required' });
+            }
+    
+            // Check if the roomId exists in the database
+            const roomExists = await Room.findOne({ roomId });
+    
+            if (!roomExists) {
+                return res.status(200).json({
+                    success: false,
+                    message: 'Room not found. Unpin and exit the app.',
+                    action: 'unpin_exit'
+                });
+            }
+    
+            // If roomId exists, return success
+            res.status(200).json({
+                success: true,
+                message: 'Room is active.'
+            });
+        } catch (error) {
+            console.error('Error checking roomId:', error);
+            res.status(500).json({ success: false, message: 'Internal server error' });
+        }
+    });
     // Function to validate a student using the Degree model
     async function validateStudent(rollNumber) {
         try {
